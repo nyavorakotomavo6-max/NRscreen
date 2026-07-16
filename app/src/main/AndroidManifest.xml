@@ -26,19 +26,22 @@
         android:theme="@style/Theme.NRscreen"
         android:usesCleartextTraffic="false">
 
-        <!-- Ecran d'accueil : demande des autorisations -->
+ <!-- Ecran d'accueil : demande des autorisations -->
         <activity
             android:name=".onboarding.PermissionActivity"
+            android:exported="false" />
+
+        <!-- Test de grille pixel art -->
+        <!-- TEMPORAIRE : LAUNCHER ici tant que PermissionActivity n'est pas codee.
+             A remettre sur PermissionActivity une fois l'onboarding termine. -->
+        <activity
+            android:name=".test.GridTestActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Test de grille pixel art -->
-        <activity android:name=".test.GridTestActivity" android:exported="false" />
-
         <!-- Ecran de resultat : carte des zones mortes -->
         <activity android:name=".test.DeadZoneMapActivity" android:exported="false" />
 
