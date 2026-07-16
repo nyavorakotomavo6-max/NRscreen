@@ -60,6 +60,6 @@ class GridTestActivity : AppCompatActivity() {
     companion object {
         const val GRID_ROWS = 12
         const val GRID_COLS = 6
-        const val TIMEOUT_MS = 15_000L
+        const val TIMEOUT_MS = 300_000L // 5 minutes pour laisser le temps de tester manuellement
     }
 }
