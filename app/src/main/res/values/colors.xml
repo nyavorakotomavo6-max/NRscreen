@@ -1,0 +1,10 @@
+<resources>
+    <!-- Palette pixel art volontairement contrastée et lisible, style "8-bit" -->
+    <color name="pixel_bg">#0F0F1B</color>
+    <color name="pixel_zone_alive">#3ECF8E</color>
+    <color name="pixel_zone_dead">#E63946</color>
+    <color name="pixel_zone_suspect">#F4A261</color>
+    <color name="pixel_zone_untested">#3A3A55</color>
+    <color name="pixel_accent">#7B61FF</color>
+    <color name="pixel_text">#F1F1F1</color>
+</resources>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">NRscreen</string>
+    <string name="permission_title">Autorisations nécessaires</string>
+    <string name="permission_overlay_desc">Afficher les boutons flottants par-dessus les autres apps</string>
+    <string name="permission_accessibility_desc">Détecter les gestes et boutons externes pour naviguer sans toucher les zones mortes</string>
+    <string name="grid_test_title">Test de l\'écran</string>
+    <string name="grid_test_instruction">Touche chaque case pixel. Les cases qui ne réagissent pas seront marquées comme zones mortes.</string>
+    <string name="deadzone_map_title">Carte des zones mortes</string>
+    <string name="prevention_mode_title">Mode prévention</string>
+    <string name="report_title">Rapport visuel</string>
+</resources>

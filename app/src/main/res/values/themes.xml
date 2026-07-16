@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.NRscreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pixel_accent</item>
+        <item name="android:windowBackground">@color/pixel_bg</item>
+        <item name="colorOnPrimary">@color/pixel_text</item>
+    </style>
+</resources>

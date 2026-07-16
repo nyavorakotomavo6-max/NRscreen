@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Overlay pour les boutons flottants qui redirigent les touchers -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Service qui tourne en fond pour le monitoring continu et la redirection -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Vibration pour le feedback haptique de zone morte -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Boutons physiques (volume, power) pour la navigation en dernier recours -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Lister les apps installees pour le launcher temporaire -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
+    <application
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@style/Theme.NRscreen"
+        android:usesCleartextTraffic="false">
+
+        <!-- Ecran d'accueil : demande des autorisations -->
+        <activity
+            android:name=".onboarding.PermissionActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Test de grille pixel art -->
+        <activity android:name=".test.GridTestActivity" android:exported="false" />
+
+        <!-- Ecran de resultat : carte des zones mortes -->
+        <activity android:name=".test.DeadZoneMapActivity" android:exported="false" />
+
+        <!-- Simulateur de zones mortes pour dev/test -->
+        <activity android:name=".simulator.DeadZoneSimulatorActivity" android:exported="false" />
+
+        <!-- Rapport visuel exportable -->
+        <activity android:name=".report.ReportActivity" android:exported="false" />
+
+        <!-- Launcher temporaire qui reorganise les icones -->
+        <activity
+            android:name=".launcher.NRLauncherActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Service de fond : monitoring continu + boutons flottants -->
+        <service
+            android:name=".control.FloatingButtonService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".test.ContinuousMonitorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <!-- Service d'accessibilite : capte les gestes globaux + boutons externes,
+             et sert de pont pour que les AUTRES apps beneficient aussi de la carte
+             de zones mortes (config exportee, pas de duplication de logique) -->
+        <service
+            android:name=".control.NRAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+    </application>
+</manifest>
