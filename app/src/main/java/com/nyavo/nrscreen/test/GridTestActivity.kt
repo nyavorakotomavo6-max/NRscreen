@@ -1,10 +1,10 @@
 package com.nyavo.nrscreen.test
 
-import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
+import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -13,83 +13,85 @@ import com.nyavo.nrscreen.data.DeadZoneMapHolder
 
 class GridTestActivity : AppCompatActivity() {
 
-    private lateinit var map: DeadZoneMap
-    private lateinit var gridView: GridTestView
-    private lateinit var instructionText: TextView
+    private lateinit var gridTestView: GridTestView
+    private lateinit var timerTextView: TextView
     private lateinit var finishButton: Button
-    private val handler = Handler(Looper.getMainLooper())
-    private var phantomCountdown: CountDownTimer? = null
+    
+    private var deadZoneMap: DeadZoneMap? = null
+    private var countDownTimer: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Configurer les couleurs de la status bar et navigation bar
+        window.statusBarColor = Color.parseColor("#0D0221")
+        window.navigationBarColor = Color.parseColor("#0D0221")
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        
         setContentView(R.layout.activity_grid_test)
-
-        map = DeadZoneMap(rows = GRID_ROWS, cols = GRID_COLS)
-
-        gridView = findViewById(R.id.gridTestView)
-        instructionText = findViewById(R.id.instructionText)
-        finishButton = findViewById(R.id.finishButton)
-
-        gridView.map = map
-        gridView.phase = TestPhase.PHANTOM_CHECK
-
-        finishButton.isEnabled = false
-        finishButton.setOnClickListener { finishTestNow() }
-
-        startPhantomCheckPhase()
+        
+        gridTestView = findViewById(R.id.gridTestView)
+        timerTextView = findViewById(R.id.timerTextView)
+        finishButton = findViewById(R.id.button)
+        
+        // Initialiser la DeadZoneMap
+        deadZoneMap = DeadZoneMap(rows = 12, cols = 6)
+        gridTestView.setDeadZoneMap(deadZoneMap!!)
+        
+        // Configurer le listener de tap
+        gridTestView.setOnCellTappedListener(object : GridTestView.OnCellTappedListener {
+            override fun onCellTapped(row: Int, col: Int) {
+                deadZoneMap?.recordMissedTap(row, col)
+            }
+        })
+        
+        // Configurer le bouton Terminer        finishButton.setOnClickListener {
+            finishTest()
+        }
+        
+        // Démarrer le timer
+        startTimer()
     }
 
-    private fun startPhantomCheckPhase() {
-        phantomCountdown = object : CountDownTimer(PHANTOM_CHECK_MS, 1000) {
-            override fun onTick(msLeft: Long) {
-                val secLeft = (msLeft / 1000) + 1
-                instructionText.text =
-                    "NE TOUCHE PAS L'ECRAN pendant $secLeft s (detection des faux touchers)"
+    private fun startTimer() {
+        countDownTimer = object : CountDownTimer(15000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val seconds = (millisUntilFinished / 1000).toInt()
+                timerTextView.text = "${seconds}s"
             }
 
             override fun onFinish() {
-                startActivePhase()
+                timerTextView.text = "0s"
+                finishTest()
             }
         }.start()
     }
 
-    private fun startActivePhase() {
-        gridView.phase = TestPhase.ACTIVE
-        instructionText.text = getString(R.string.grid_test_instruction)
-        finishButton.isEnabled = true
-        handler.postDelayed({ markUntestedAsDead() }, TIMEOUT_MS)
-    }
-
-    private fun markUntestedAsDead() {
-        for (r in 0 until map.rows) {
-            for (c in 0 until map.cols) {
-                val cell = map.cellAt(r, c)
+    private fun finishTest() {
+        countDownTimer?.cancel()
+        
+        // Marquer toutes les cellules UNTESTED comme DEAD
+        val map = deadZoneMap ?: return
+        for (row in 0 until 12) {
+            for (col in 0 until 6) {
+                val cell = map.cellAt(row, col)
                 if (cell.state == ZoneState.UNTESTED) {
                     cell.state = ZoneState.DEAD
                 }
             }
         }
-        gridView.invalidate()
-    }
-
-    private fun finishTestNow() {
-        handler.removeCallbacksAndMessages(null)
-        markUntestedAsDead()
+        
+        // Stocker la map
         DeadZoneMapHolder.current = map
-        startActivity(Intent(this, DeadZoneMapActivity::class.java))
+        
+        // Naviguer vers DeadZoneMapActivity
+        startActivity(
+            android.content.Intent(this, DeadZoneMapActivity::class.java)
+        )
         finish()
     }
 
     override fun onDestroy() {
-        handler.removeCallbacksAndMessages(null)
-        phantomCountdown?.cancel()
         super.onDestroy()
-    }
-
-    companion object {
-        const val GRID_ROWS = 48
-        const val GRID_COLS = 24
-        const val PHANTOM_CHECK_MS = 5_000L
-        const val TIMEOUT_MS = 300_000L
-    }
-}
+        countDownTimer?.cancel()
+    }}

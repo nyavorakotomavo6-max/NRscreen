@@ -1,7 +1,8 @@
-
 package com.nyavo.nrscreen.test
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.nyavo.nrscreen.R
@@ -9,25 +10,35 @@ import com.nyavo.nrscreen.data.DeadZoneMapHolder
 
 class DeadZoneMapActivity : AppCompatActivity() {
 
+    private lateinit var gridTestView: GridTestView
+    private lateinit var statsTextView: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_deadzone_map)
-
-        val map = DeadZoneMapHolder.current ?: DeadZoneMap(rows = 12, cols = 6)
-
-        val resultGridView = findViewById<GridTestView>(R.id.resultGridView)
-        resultGridView.map = map
-        resultGridView.onCellTouched = null
-
-        val dead = map.deadCells().size
-        val total = map.rows * map.cols
-        val pct = map.deadPercentage()
-
-        findViewById<TextView>(R.id.summaryText).text =
-            "Zones mortes : $dead/$total (${"%.1f".format(pct)}%%)"
-    }
-
-    companion object {
-        const val SEUIL_ECRAN_QUASI_MORT = 85f
+        
+        // Configurer les couleurs
+        window.statusBarColor = Color.parseColor("#0D0221")
+        window.navigationBarColor = Color.parseColor("#0D0221")
+        
+        setContentView(R.layout.activity_dead_zone_map)
+        
+        gridTestView = findViewById(R.id.gridTestView)
+        statsTextView = findViewById(R.id.statsTextView)
+        
+        // Récupérer la map
+        val map = DeadZoneMapHolder.current
+        if (map != null) {
+            gridTestView.setDeadZoneMap(map)
+            
+            // Afficher les statistiques
+            val deadPercentage = map.deadPercentage()
+            val deadCount = map.deadCells().size
+            val suspectCount = map.suspectCells().size
+            
+            statsTextView.text = """
+                Zones mortes: $deadCount (${String.format("%.1f", deadPercentage)}%)
+                Zones suspectes: $suspectCount
+            """.trimIndent()
+        }
     }
 }
