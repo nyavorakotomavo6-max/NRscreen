@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Palette Violet Pixel Art NRscreen -->
+    <!-- Couleurs existantes requises par d'autres parties du projet -->
+    <color name="pixel_accent">#C77DFF</color>
+    <color name="pixel_bg">#0D0221</color>
+    <color name="pixel_text">#E0AAFF</color>
+
+    <!-- Palette Violet Pixel Art NRscreen (Nouvelles) -->
     <color name="nr_violet_space">#0D0221</color>
     <color name="nr_violet_deep">#240046</color>
     <color name="nr_violet_dark_matte">#1B0A2E</color>
